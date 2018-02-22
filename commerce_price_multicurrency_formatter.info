@@ -1,0 +1,6 @@
+name = Commerce Price Multicurrency Formatter
+description = Provides currency conversion support for custom Commerce Price fields that is not attached to a product.
+core = 7.x
+package = Commerce (contrib)
+dependencies[] = commerce_price
+dependencies[] = commerce_multicurrency

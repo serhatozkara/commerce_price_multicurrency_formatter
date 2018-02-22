@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * Implements hook_commerce_price_field_calculation_options().
+ *
+ * @see commerce_multicurrency_commerce_price_field_formatter_prepare_view()
+ */
+function commerce_price_multicurrency_formatter_commerce_price_field_calculation_options($field, $instance, $view_mode) {
+    // If this is a single value custom price field NOT attached to a commerce product.
+    if ($instance['entity_type'] != 'commerce_product' && $field['field_name'] != 'commerce_price' && $field['cardinality'] == 1) {
+        return array('currency_specific_price' => t('Commerce Multicurrency: Display the price in a specific currency.'));
+    }
+}
+
+function commerce_price_multicurrency_formatter_commerce_price_field_formatter_prepare_view($entity_type, $entities, $field, $instances, $langcode, &$items, $displays) {
+
+    // If this is a single value custom price field NOT attached to a product...
+    if ($entity_type != 'commerce_product' && $field['module'] == 'commerce_price' && $field['cardinality'] == 1 && $field['field_name'] != 'commerce_price') {
+
+
+        //If this is a non-product price field and "Display the price in a specific currency." is selected, convert the currency to user selected currency.
+        foreach ($displays as $display) {
+            if ($display['type'] == 'commerce_price_formatted_amount' && $display['settings']['calculation'] == 'currency_specific_price' ) {
+                foreach ($items as $delta => $item) {
+                    $user_currency = commerce_multicurrency_get_user_currency_code();
+                    $converted_price = commerce_multicurrency_conversion($item[0]['amount'], $item[0]['currency_code'], $user_currency);
+                    $items[$delta][0]['amount'] = $converted_price;
+                    $items[$delta][0]['currency_code'] = $user_currency;
+                }
+            }
+
+        }
+
+    }
+}
+
