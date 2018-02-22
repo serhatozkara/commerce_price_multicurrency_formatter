@@ -1,1 +1,1 @@
-# drupal-commerce_price_multicurrency_formatter
+# commerce_price_multicurrency_formatter
